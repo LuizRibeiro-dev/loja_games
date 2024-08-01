@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, MinLength } from "class-validator"
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 import { Produto } from "../../produto/entities/produto.entity"
 
 
@@ -12,6 +12,10 @@ export class Usuario {
     @IsNotEmpty()
     @Column({length: 255, nullable: false}) 
     nome: string
+
+    @IsNotEmpty()
+    @Column({ type: 'varchar', nullable: false})
+    nascimento: Date
 
     @IsEmail()
     @IsNotEmpty()

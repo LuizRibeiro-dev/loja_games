@@ -1,8 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { Usuario } from '../entities/usuario.entity';
 import { Bcrypt } from '../../auth/bcrypt/bcrypt';
+import moment from 'moment';
 
 @Injectable()
 export class UsuarioService {
@@ -54,12 +55,24 @@ export class UsuarioService {
         let buscaUsuario = await this.findByUsuario(usuario.usuario);
 
         if (!buscaUsuario) {
-            usuario.senha = await this.bcrypt.criptografarSenha(usuario.senha)
-            return await this.usuarioRepository.save(usuario);
+            const nascimentoMoment = moment(usuario.nascimento, 'DD/MM/YYYY', true);
+            if (!nascimentoMoment.isValid()) {
+                throw new HttpException('Data de nascimento inválida!', HttpStatus.BAD_REQUEST);
+            }
+    
+            const nascimento = nascimentoMoment.toDate();
+            const idade = moment().diff(nascimento, 'years');
+    
+            if (idade >= 18) {
+                usuario.senha = await this.bcrypt.criptografarSenha(usuario.senha);
+                usuario.nascimento = nascimento;
+                return await this.usuarioRepository.save(usuario);
+            } else {
+                throw new HttpException('Você tem menos de 18 anos!', HttpStatus.BAD_REQUEST);
+            }
         }
-
-        throw new HttpException("O Usuario ja existe!", HttpStatus.BAD_REQUEST);
-
+    
+        throw new HttpException('O usuário já existe!', HttpStatus.BAD_REQUEST);
     }
 
     async update(usuario: Usuario): Promise<Usuario> {
@@ -76,6 +89,4 @@ export class UsuarioService {
         usuario.senha = await this.bcrypt.criptografarSenha(usuario.senha)
         return await this.usuarioRepository.save(usuario);
 
-    }
-
-}
+    }}
