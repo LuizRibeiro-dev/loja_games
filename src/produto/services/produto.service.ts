@@ -15,7 +15,8 @@ export class ProdutoService {
 
     async findAll(): Promise<Produto[]> {
         return await this.ProdutoRepository.find({relations:{
-            tema: true
+            tema: true,
+            usuario: true
         }});
     }
 
@@ -26,7 +27,8 @@ export class ProdutoService {
                 id
             },
             relations:{
-                tema: true
+                tema: true,
+                usuario: true
             }
         });
 
@@ -40,7 +42,8 @@ export class ProdutoService {
         return await this.ProdutoRepository.find({
          where:{ titulo: ILike(`%${titulo}%`)},
          relations:{
-            tema: true
+            tema: true,
+            usuario: true
         }
     })
    }
@@ -79,21 +82,20 @@ export class ProdutoService {
  async findByPrecoMenor(preco: number): Promise<Produto[]>{
     
     //Tentativa de mensagem de erro
-    //if (Produto.length === 0)
-    //throw new HttpException('Não há produtos com o valor menor ou igual a esse!', HttpStatus.NOT_FOUND);
+    /*if (Produto.length === 0)
+        throw new HttpException('Não há produtos com o valor menor ou igual a esse!', HttpStatus.NOT_FOUND);*/
      
     return await this.ProdutoRepository.findBy({ preco: LessThanOrEqual(preco) }
     )}
 
 // procura por preço maior ou igual
-async findByPrecoMaior(preco: number): Promise<Produto[]>{
+async findByPrecoMaior(preco: number): Promise<Produto[]> {
     
     //Tentativa de mensagem de erro
-    //if (Produto.length === 0)
-        //throw new HttpException('Não há produtos com o valor maior ou igual a esse!', HttpStatus.NOT_FOUND);
+    /*if (Produto.length === 0)
+        throw new HttpException('Não há produtos com o valor maior ou igual a esse!', HttpStatus.NOT_FOUND);*/
     
-    return await this.ProdutoRepository.findBy({ preco: MoreThanOrEqual(preco) }
-   )
+    return await this.ProdutoRepository.findBy({ preco: MoreThanOrEqual(preco) })
 }
 }
 
